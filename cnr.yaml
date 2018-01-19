@@ -8,6 +8,8 @@
     cassandra_data_dir: /path/to/data/dir
     cassandra_commit_log_dir: /path/to/commit/log
     truncate_tables: False
+    keyspaces: [ "list", "of", "keyspaces" ] # One or the other? 
+    tables: [ "list.tables", "list.single" ]
 
   tasks:
 
