@@ -3,21 +3,29 @@
   hosts: all
   become: yes
   vars:
+    cassandra_clobber_file: /tmp/clobber_cass_data.restore
     cassandra_snapshot_directory: /path/to/snapshots
     cassandra_incremental_directory: /path/to/incrementals
     cassandra_data_dir: /path/to/data/dir
     cassandra_commit_log_dir: /path/to/commit/log
     truncate_tables: False
-    keyspaces: [ "list", "of", "keyspaces" ] # One or the other? 
+    keyspaces: [ "list", "of", "keyspaces" ] # One or the other?
     tables: [ "list.tables", "list.single" ]
 
   tasks:
 
     - name: Check /tmp/clobber_cass_data.restore exists
-      failed_when: file does not exist
+      stat:
+        path: "{{ cassandra_clobber_file }}"
+      register: clobber
+      failed_when: clobber.stat.exists
     - name: Truncate all snapshot tables
       when: truncate_tables == True
     - name: Get the most recent snapshot directory for all tables
     - name: Copy the most recent snapshot SSTable directory to the appropriate data_dir location
     - name: Run nodetool refresh
     - name: Restart node... is this needed for 2.2?? TODO
+    - name: Remove the clobber file
+      file:
+        path: "{{ cassandra_clobber_file }}"
+        state: absent
